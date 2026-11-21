@@ -1,0 +1,52 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Intraday Radar AI</title>
+<style>
+:root{--paper:#f4f6f8;--card:#fff;--ink:#172033;--mut:#66728a;--line:#dde2ea;--call:#1b66d1;--put:#d4571c;--amber:#b7791f;--gain:#1f8a70;--loss:#c0392b;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--paper:#10151f;--card:#182030;--ink:#e8ecf4;--mut:#8a96ad;--line:#263046;--call:#5b9cf5;--put:#f08a54;--amber:#e0b04a;--gain:#4cc9a6;--loss:#ff7b72}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+main{max-width:1000px;margin:0 auto;padding:16px;display:grid;gap:14px}
+header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}h1{font-size:18px;margin:0}
+.badge{font-size:13px;color:var(--amber);border:1px solid var(--amber);border-radius:99px;padding:2px 10px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+h2{font-size:14px;margin:0 0 8px;color:var(--mut);font-weight:600}
+.px{display:flex;gap:28px;flex-wrap:wrap;align-items:baseline}.big{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1.1}.sm{font-size:20px}.mut{color:var(--mut);font-size:13px}
+canvas{width:100%;height:150px;display:block;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.CALL{color:var(--call)}.PUT{color:var(--put)}b{font-weight:700}.g{color:var(--gain)}.l{color:var(--loss)}
+ul{list-style:none;margin:0;padding:0}li{padding:6px 0;border-top:1px solid var(--line)}li:first-child{border:0}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:right;padding:5px 4px;border-top:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:600;border:0}th:first-child,td:first-child{text-align:left}
+</style></head><body><main>
+<header><h1>Intraday Radar AI</h1><span class="badge" id="src">Conectando…</span></header>
+<section><div class="px"><div><div class="mut">SPX</div><div class="big" id="spx">–</div></div><div><div class="mut">VIX</div><div class="sm" id="vix">–</div></div><div><div class="mut">VWAP</div><div class="sm" id="vw">–</div></div><div><div class="mut">EMA 9 / 21</div><div class="sm" id="ema">–</div></div></div><canvas id="ch"></canvas></section>
+<section><h2>Señales de calidad (mínimo <span id="min">75</span>/100)</h2><ul id="sig"></ul></section>
+<div class="grid"><section><h2>Radar 0DTE</h2><ul id="r0"></ul></section><section><h2>Radar 1-7 DTE (referencia: 3 días)</h2><ul id="r3"></ul></section></div>
+<section><h2>Simulador: <span id="st"></span></h2><div class="wrap"><table><thead><tr><th>Hora</th><th>Estrategia</th><th>Contrato</th><th>Entrada</th><th>P/L</th><th>Estado</th></tr></thead><tbody id="tr"></tbody></table></div></section>
+<p class="mut">Modo offline: datos y operaciones ficticias de demostración. Entradas al ask, salidas al bid. No son cotizaciones reales ni asesoramiento financiero.</p>
+</main><script>
+const $=i=>document.getElementById(i),f=(n,d=2)=>Number(n).toFixed(d);
+const con=o=>o?`<li><b class="${o.type}">${o.type}</b> ${o.strike} · delta ${f(o.delta)} · bid ${f(o.bid)} / ask ${f(o.ask)}</li>`:'';
+function draw(p,vw){const c=$('ch'),x=c.getContext('2d'),r=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*r;c.height=h*r;x.scale(r,r);
+if(!p||p.length<2)return;const lo=Math.min(...p,vw),hi=Math.max(...p,vw),Y=v=>h-4-(v-lo)/(hi-lo||1)*(h-8),s=getComputedStyle(document.documentElement);
+x.strokeStyle=s.getPropertyValue('--ink');x.lineWidth=1.6;x.beginPath();p.forEach((v,i)=>{const X=i/(p.length-1)*w;i?x.lineTo(X,Y(v)):x.moveTo(X,Y(v))});x.stroke();
+x.strokeStyle=s.getPropertyValue('--amber');x.setLineDash([5,4]);x.beginPath();x.moveTo(0,Y(vw));x.lineTo(w,Y(vw));x.stroke();x.setLineDash([])}
+// Datos ficticios locales: nunca representan cotizaciones de mercado reales.
+let demoPrice=5920, demoHistory=Array.from({length:36},(_,i)=>5920+Math.sin(i/4)*5+(i-18)*.15), demoTick=0;
+function localDemo(){demoTick++;demoPrice+=Math.sin(demoTick/5)*.65+(Math.random()-.48)*1.5;
+const vix=17.2+Math.sin(demoTick/12)*1.3+(Math.random()-.5)*.3;
+const vwap=demoPrice- Math.sin(demoTick/8)*2.1, ema9=demoPrice+Math.sin(demoTick/6)*1.3,ema21=demoPrice-Math.sin(demoTick/9)*1.1;
+demoHistory.push(demoPrice);if(demoHistory.length>60)demoHistory.shift();
+const trend=demoPrice>vwap?'CALL':'PUT',score=Math.round(70+Math.abs(demoPrice-vwap)*2.8+Math.random()*12);
+const signals=score>=75?[{side:trend,strategy:trend==='CALL'?'Momentum sobre VWAP':'Rechazo bajo VWAP',score:Math.min(score,97),why:'DEMO local: confluencia simulada de precio, VWAP y EMA. No usar para operar.'}]:[];
+function opts(type,dte){const strike=Math.round(demoPrice/5)*5+(type==='CALL'?5:-5);const mid=type==='CALL'?3.2:3.0;const bid=mid-.1+Math.random()*.25,ask=bid+.25;return {type,strike,delta:(type==='CALL'?.42:-.38)+(Math.random()-.5)*.04,bid,ask,dte}}
+return {source:'DEMO LOCAL · datos ficticios',spx:demoPrice,vix,vwap,ema9,ema21,min_score:75,prices:[...demoHistory],signals,radar:{'0DTE':[opts('CALL',0),opts('PUT',0)],'1-7 DTE':[opts('CALL',3),opts('PUT',3)]},stats:{n:12,win:58,avg:1.35},trades:[
+{hora:'10:05',strategy:'Momentum VWAP',type:'CALL',strike:5925,dte:0,entry:2.85,pnl:8.4,status:'Demo cerrada'},
+{hora:'10:42',strategy:'Reversión EMA',type:'PUT',strike:5915,dte:0,entry:3.10,pnl:-3.2,status:'Demo cerrada'},
+{hora:'11:18',strategy:'Breakout',type:'CALL',strike:5920,dte:3,entry:4.25,pnl:5.7,status:'Demo cerrada'}]};}
+function render(d){if(!d||!d.spx)return;
+$('src').textContent=d.source;$('spx').textContent=f(d.spx);$('vix').textContent=f(d.vix);$('vw').textContent=f(d.vwap);$('ema').textContent=f(d.ema9)+' / '+f(d.ema21);$('min').textContent=d.min_score;
+$('sig').innerHTML=d.signals.length?d.signals.map(s=>`<li><b class="${s.side}">${s.side}</b> ${s.strategy} · ${s.score}/100<div class="mut">${s.why}</div></li>`).join(''):'<li class="mut">Sin señales de calidad ahora. El radar espera confluencia.</li>';
+$('r0').innerHTML=d.radar['0DTE'].map(con).join('');$('r3').innerHTML=d.radar['1-7 DTE'].map(con).join('');
+$('st').textContent=`${d.stats.n} cerradas · ${d.stats.win}% ganadoras · P/L medio ${d.stats.avg}%`;
+$('tr').innerHTML=d.trades.length?d.trades.map(t=>`<tr><td>${t.hora}</td><td>${t.strategy}</td><td class="${t.type}">${t.type} ${t.strike} (${t.dte}DTE)</td><td>${f(t.entry)}</td><td class="${t.pnl>=0?'g':'l'}">${t.pnl}%</td><td>${t.status}</td></tr>`).join(''):'<tr><td colspan="6" class="mut">Aún no hay operaciones simuladas.</td></tr>';draw(d.prices,d.vwap)}
+async function tick(){try{const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw new Error('server');const d=await r.json();if(!d.spx)throw new Error('empty');render(d);}catch(e){render(localDemo());}}
+tick();setInterval(tick,2000);
+</script></body></html>
