@@ -1,0 +1,29 @@
+Tengo una app "Intraday Radar AI" (FastAPI + index.html, ver README.md y app.py).
+Es un radar de señales para opciones SPX (0DTE y 1-7 DTE), solo lectura y simulación.
+Ahora funciona con datos simulados (clase Demo). Quiero la FASE 2: conectar con Tastytrade.
+
+1. Lee la documentación oficial actual de la API de Tastytrade y dime qué método
+   de autenticación usar (si hay un acceso para aplicaciones, mejor que la
+   contraseña normal). Las credenciales irán SOLO en el archivo .env, nunca en
+   el código ni en los logs. Actualiza .env.example con los nombres de las
+   variables y asegúrate de que .env está en .gitignore.
+
+2. Crea un proveedor TastyProvider con los mismos atributos que Demo
+   (spx, vix, bars, label, tick()) y actívalo con DATA_SOURCE=tasty en make_provider().
+   - bars: velas de 1 minuto de SPX con volumen (el volumen de SPX puede venir
+     en cero: si es así, usa el volumen de SPY o ES como aproximación y dímelo).
+   - Streaming en tiempo real de SPX y VIX.
+
+3. Sustituye chain() por la cadena real de opciones SPX (0DTE y 1-7 DTE) con
+   bid, ask, delta, volumen e interés abierto. Mantén la misma estructura de datos
+   para que pick(), simulate() y el tablero sigan funcionando.
+
+4. Si algún dato no llega en tiempo real o llega con retraso, muéstralo
+   claramente en el tablero (en el badge de estado).
+
+5. Solo lectura: no implementes ninguna función de enviar órdenes.
+
+6. Antes de escribir código, hazme un plan corto y pregúntame lo que necesites.
+   Prueba la conexión paso a paso y no sigas si algo falla. Cuando necesites las
+   credenciales, dime qué variables añadir al .env; yo las escribiré directamente
+   en el archivo.
