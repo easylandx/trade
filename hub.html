@@ -3,62 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Enlaces - EasylandX Trade</title>
-    <!-- Carga de Tailwind CSS para un diseño moderno, limpio y responsivo -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuente Inter para máxima legibilidad -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
+    <title>Enlaces de Navegación - Trade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
-    </script>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-700">
 
-    <!-- Notificación flotante (Toast) para confirmar acciones sin usar alert() -->
-    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-        <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 text-sm font-medium border border-slate-700">
-            <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span id="toast-message">Enlace copiado al portapapeles</span>
-        </div>
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-demo {
+            background-color: #28a745;
+        }
+
+        .btn-demo:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Panel de Enlaces - Trade</h1>
+
+    <div class="container">
+        <!-- Enlace 1 -->
+        <a href="https://easylandx.github.io/trade/" class="btn" target="_blank" rel="noopener noreferrer">Trade Principal</a>
+
+        <!-- Enlace 2 -->
+        <a href="https://easylandx.github.io/trade/demo.html" class="btn btn-demo" target="_blank" rel="noopener noreferrer">Trade Demo</a>
+
+        <!-- Enlace 3 -->
+        <a href="https://easylandx.github.io/trade/x" class="btn" target="_blank" rel="noopener noreferrer">Trade X</a>
+
+        <!-- Enlace 4 -->
+        <a href="https://easylandx.github.io/trade/x/demo2.html" class="btn btn-demo" target="_blank" rel="noopener noreferrer">Trade X Demo 2</a>
+
+        <!-- Enlace 5 -->
+        <a href="https://easylandx.github.io/trade/g" class="btn" target="_blank" rel="noopener noreferrer">Trade G</a>
+
+        <!-- Enlace 6 -->
+        <a href="https://easylandx.github.io/trade/g/demo3.html" class="btn btn-demo" target="_blank" rel="noopener noreferrer">Trade G Demo 3</a>
     </div>
 
-    <!-- Contenedor Principal -->
-    <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        
-        <!-- Encabezado de la página -->
-        <header class="text-center mb-12">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold tracking-wide uppercase mb-4">
-                <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                Acceso Rápido
-            </div>
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-3">
-                Directorio de Entornos Trade
-            </h1>
-            <p class="text-slate-500 max-w-xl mx-auto text-base sm:text-lg">
-                Selecciona cualquiera de los accesos directos para abrir el entorno correspondiente en una nueva pestaña o copia su URL.
-            </p>
-        </header>
-
-        <!-- Cuadrícula de 2 columnas x 3 filas (3 grupos claros) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-
-            <!-- GRUPO 1: Entorno Principal -->
-            <!-- Botón 1 -->
-            <div class="group relative bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-200 flex items-stretch overflow-hidden">
-                <a href="https://easylandx.github.io/trade/" target="_blank" rel="noopener noreferrer" class="flex-1 p-5 sm:p-6 flex items-center gap-4 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                    <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200">
-                        <!-- Icono Gráfico / Principal -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="
+</body>
+</html>
